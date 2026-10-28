@@ -4,12 +4,12 @@
 
 本仓库只提供**二进制安装包**与说明文档，不包含 Python 源码。
 
-## 安装包（v1.2.2，单文件二进制）
+## 安装包（v1.2.3，单文件二进制）
 
 位于 [`release/`](release/) 目录：
 
-- `wxchat-tool_1.2.2_arm64.deb` — Debian / Ubuntu（ARM64）安装包（推荐）
-- `wxchat-tool-1.2.2-linux-arm64.tar.gz` — 免安装压缩包
+- `wxchat-tool_1.2.3_arm64.deb` — Debian / Ubuntu（ARM64）安装包（推荐）
+- `wxchat-tool-1.2.3-linux-arm64.tar.gz` — 免安装压缩包
 - `SHA256SUMS` — 校验和
 
 > 本版本使用 PyInstaller 打包为单文件 ELF 二进制，不附带 `.py` 源码，
@@ -19,14 +19,14 @@
 
 ```bash
 # Debian / Ubuntu（ARM64）
-sudo dpkg -i release/wxchat-tool_1.2.2_arm64.deb
+sudo dpkg -i release/wxchat-tool_1.2.3_arm64.deb
 ```
 
 或免安装包：
 
 ```bash
-tar -xzf release/wxchat-tool-1.2.2-linux-arm64.tar.gz
-cd wxchat-tool-1.2.2-linux-arm64 && bash install.sh
+tar -xzf release/wxchat-tool-1.2.3-linux-arm64.tar.gz
+cd wxchat-tool-1.2.3-linux-arm64 && bash install.sh
 ```
 
 校验完整性：
@@ -46,10 +46,12 @@ sha256sum -c SHA256SUMS
 - 全量解密微信本地数据库（主库 + WAL 合并）
 - 导出联系人、会话、聊天记录
 - 一键生成统计报告（消息类型 / 聊天 TOP / 24 小时分布）
+- 一键生成年度报告（月度趋势 / 高频关键词 / 活跃时段）
 - 关键词搜索聊天记录
 - 图片 `.dat` 解密（V1 / V2 / 旧 XOR）
 - 图形界面可自定义数据库目录、附件目录、输出目录
 - 图形界面「输出产物」页可一键直达解密结果
+- 图形界面带过渡动画与呼吸灯效果
 
 ## 系统要求
 
