@@ -4,12 +4,12 @@
 
 本仓库只提供**二进制安装包**与说明文档，不包含 Python 源码。
 
-## 安装包（v1.2.3，单文件二进制）
+## 安装包（v1.2.4，单文件二进制）
 
 位于 [`release/`](release/) 目录：
 
-- `wxchat-tool_1.2.3_arm64.deb` — Debian / Ubuntu（ARM64）安装包（推荐）
-- `wxchat-tool-1.2.3-linux-arm64.tar.gz` — 免安装压缩包
+- `wxchat-tool_1.2.4_arm64.deb` — Debian / Ubuntu（ARM64）安装包（推荐）
+- `wxchat-tool-1.2.4-linux-arm64.tar.gz` — 免安装压缩包
 - `SHA256SUMS` — 校验和
 
 > 本版本使用 PyInstaller 打包为单文件 ELF 二进制，不附带 `.py` 源码，
@@ -19,14 +19,14 @@
 
 ```bash
 # Debian / Ubuntu（ARM64）
-sudo dpkg -i release/wxchat-tool_1.2.3_arm64.deb
+sudo dpkg -i release/wxchat-tool_1.2.4_arm64.deb
 ```
 
 或免安装包：
 
 ```bash
-tar -xzf release/wxchat-tool-1.2.3-linux-arm64.tar.gz
-cd wxchat-tool-1.2.3-linux-arm64 && bash install.sh
+tar -xzf release/wxchat-tool-1.2.4-linux-arm64.tar.gz
+cd wxchat-tool-1.2.4-linux-arm64 && bash install.sh
 ```
 
 校验完整性：
@@ -52,6 +52,7 @@ sha256sum -c SHA256SUMS
 - 图形界面可自定义数据库目录、附件目录、输出目录
 - 图形界面「输出产物」页可一键直达解密结果
 - 图形界面带过渡动画与呼吸灯效果
+- 首次启动显示免责声明同意书（10 秒确认）
 
 ## 系统要求
 
@@ -63,10 +64,57 @@ sha256sum -c SHA256SUMS
 
 ```bash
 wxchat-tool all --out ~/wxchat-output
+wxchat-tool decrypt --keys ~/wxchat-output/all_keys.json --out ~/wxchat-output
+wxchat-tool export --out ~/wxchat-output
 wxchat-tool report --out ~/wxchat-output
+wxchat-tool year --out ~/wxchat-output
 wxchat-tool search --query 关键词 --out ~/wxchat-output
+wxchat-tool images --attach-dir ~/Documents/xwechat_files/<wxid>/msg/attach
 wxchat-gui
 ```
+
+### 命令速查
+
+| 命令 | 作用 |
+|---|---|
+| `all` | 提取密钥 + 全量解密 + 导出（一步完成） |
+| `scan` | 仅提取数据库密钥 |
+| `decrypt` | 仅解密（需已有 `all_keys.json`） |
+| `export` | 导出联系人 / 会话 / 消息 |
+| `report` | 生成统计报告 |
+| `year` | 生成年度报告 |
+| `search --query 词` | 关键词搜索聊天记录 |
+| `images` | 解密 `.dat` 图片 |
+
+### 输出结构
+
+```text
+<out>/
+├── all_keys.json          # 每个数据库的密钥（敏感，勿外传）
+├── decrypted/             # 解密后的 SQLite 数据库（已合并 WAL）
+├── images/                # 解密后的图片
+└── export/
+    ├── contacts.csv
+    ├── sessions.csv
+    ├── messages.jsonl
+    ├── index.html
+    ├── report.html
+    ├── year_report.html
+    └── search_results.jsonl
+```
+
+## 开发语言与技术栈
+
+- **主要语言**：Python 3.10+
+- **图形界面**：Tkinter / ttk
+- **加密算法**：AES-256-CBC、HMAC-SHA512、PBKDF2-HMAC-SHA512（SQLCipher 4）
+- **数据处理**：SQLite 3、JSON / CSV / HTML
+- **打包发布**：PyInstaller（单文件 ELF 二进制）
+- **密钥提取**：Linux `/proc/<pid>/mem` 只读被动扫描
+
+> 本仓库按用户要求只发布二进制安装包与文档；源码未公开，
+> 因此仓库内不展示 `.py` 文件。语言占比以二进制包内实际打包的
+> Python 运行时代码为准。
 
 ## 相关说明
 
