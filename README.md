@@ -103,18 +103,16 @@ wxchat-gui
     └── search_results.jsonl
 ```
 
-## 开发语言与技术栈
+## 语言与状态
 
-- **主要语言**：Python 3.10+
-- **图形界面**：Tkinter / ttk
-- **加密算法**：AES-256-CBC、HMAC-SHA512、PBKDF2-HMAC-SHA512（SQLCipher 4）
-- **数据处理**：SQLite 3、JSON / CSV / HTML
-- **打包发布**：PyInstaller（单文件 ELF 二进制）
-- **密钥提取**：Linux `/proc/<pid>/mem` 只读被动扫描
+![Python](https://img.shields.io/badge/Python-3.10+-3776AB?style=flat&logo=python&logoColor=white)
+![GUI](https://img.shields.io/badge/GUI-Tkinter-8B5CF6?style=flat)
+![Database](https://img.shields.io/badge/DB-SQLCipher%204-0e8f6a?style=flat)
+![Packaging](https://img.shields.io/badge/Packaging-PyInstaller-1f6feb?style=flat)
+![Platform](https://img.shields.io/badge/Linux-ARM64-9cf?style=flat)
+![License](https://img.shields.io/badge/License-MIT-blue?style=flat)
 
-> 本仓库按用户要求只发布二进制安装包与文档；源码未公开，
-> 因此仓库内不展示 `.py` 文件。语言占比以二进制包内实际打包的
-> Python 运行时代码为准。
+> 本仓库按用户要求只发布二进制安装包与文档；源码未公开。
 
 ## 相关说明
 
