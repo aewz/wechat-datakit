@@ -1,0 +1,171 @@
+# 算法与技术调研（结合开发记录）
+
+本文件汇总本工具在开发过程中参考的公开仓库、可用算法与技术，并说明哪些已整合进 v1.2.0。
+
+## 0. 参考仓库索引
+
+| 仓库 | 平台 | 核心价值 |
+|---|---|---|
+| `TANGandXUE/wcdb-key-tool` | Linux x86_64 | ELF 静态分析 + GDB 断点抓 passphrase；PBKDF2 派生 |
+| `josephdavis/wechat-decrypt` | Win/Linux/macOS | 内存扫 `x'<key><salt>'`；SQLCipher4 页面/WAL；图片 V1/V2/XOR |
+| `328336690/wechat-decrypt` | Win/Linux/macOS | 同上游，含 WAL patch、MCP、图片解码 |
+| `r266-tech/wxkey` | macOS/Go | salt 邻域、二进制堆哨兵、只读区、bare-hex 四类扫描策略 |
+| `stargazer-2026/wechat-4.1.12-decrypt` | Windows | 4.1.11+ 密钥格式变化；Frida 抓 password；sender 映射坑 |
+| `hwdemtv/wechat-self-analysis` | Windows | 离线自我行为分析报告（消息导出+统计） |
+| `rmqg/wechat-mac-export` | macOS | lldb 断点 CommonCrypto 抓 per-DB key |
+| `lopleec/wxchat-export` | macOS/Linux | CLI 导出 Markdown/JSONL；GDB 抓 key |
+| `wxq` (PyPI) | Win/macOS/Linux | 本地查询 CLI，SQLCipher4 + WAL |
+| `sjzar/chatlog` | Go | 解密数据库 + 聊天记录迁移导入 |
+| `0xlane/wechat-dump-rs` | Rust | SQLCipher 4 正确实现参考 |
+| `robbin/wechat-exporter` | macOS | Claude Code / Codex skill 规范，页面格式与 WAL 验收 |
+| `huangserva/wechat-radar` | macOS | SQLCipher4 全量+WAL 增量，企业微信扩展 |
+| `Panther114/Weport` | Windows | 从 MMKV `key_<code>_*.statistic` 离线派生图片 key |
+| `H3CoF6/py_wx_key` | Windows | DB key hook + 图片 key 本地计算 |
+| `lyrcsjy/wechat-decrypt` / `hicccc77/WeFlow` | macOS | V2 图片 key = `MD5(uin+wxid)[:16]` 派生 |
+| `zhizunbao84/WeChatDataAnalysis` | Windows | 年度总结、朋友圈导出 |
+| `JamesHopbourn/WeChatDataAnalysis` | Windows | 老版本可视化分析思路 |
+
+## 1. 数据库密钥提取
+
+### 1.1 内存扫描 `x'<enc_key><salt>'`
+
+微信 4.x 的 WCDB 会把派生后的 raw key 以 SQL 字面量形式缓存在进程内存：
+
+```text
+x'<64位 hex enc_key><32位 hex salt>'
+```
+
+通过遍历微信进程可读内存区域，正则匹配该模式，再用数据库 page 1 做 HMAC 校验即可确认。
+
+- 来源：`josephdavis/wechat-decrypt`、`328336690/wechat-decrypt`
+- 已整合：本工具 `scan` 子命令即使用该算法，并额外支持纯 64-hex（无 `x'...'` 包裹）匹配。
+
+### 1.2 HMAC 校验（SQLCipher 4）
+
+```text
+salt      = db[0:16]
+mac_salt  = salt XOR 0x3a
+mac_key   = PBKDF2-HMAC-SHA512(enc_key, mac_salt, 2, dklen=32)
+valid     = HMAC-SHA512(mac_key, db[16:4032] + pack("<I",1)) == db[4032:4096]
+```
+
+- 来源：SQLCipher 4 公开格式；`wechat-decrypt`、`wcdb-key-tool`
+- 已整合：`verify_enc_key()`。
+
+### 1.3 PBKDF2 主密钥派生
+
+拿到 32 字节 password 后，每个库用自己的 salt 派生 enc_key：
+
+```text
+enc_key = PBKDF2-HMAC-SHA512(password, db[0:16], 256000, dklen=32)
+```
+
+- 来源：`TANGandXUE/wcdb-key-tool`、`stargazer-2026/wechat-4.1.12-decrypt`
+
+### 1.4 salt 邻域扫描（新整合）
+
+部分版本不再保留 `x'...'` 字符串，但 SQLCipher codec 上下文仍可能把
+`salt` 与 `enc_key` 的原始字节放在一起。算法：
+
+1. 在进程内存中查找某个数据库 salt 的原始 16 字节；
+2. 在命中位置 ±4096 字节窗口内，逐个尝试 32 字节候选作为 enc_key；
+3. 用 page 1 HMAC 校验。
+
+- 来源：`r266-tech/wxkey` 的 `IncludeSaltNeighborhood`
+- 已整合：本工具 `scan` 自动执行该兜底。
+
+### 1.5 二进制堆布局哨兵模式（调研，待整合）
+
+新版微信可能把 32 字节 password 作为原始字节放在堆布局哨兵附近，例如：
+
+```text
+哨兵: 20 66 74 73 35 28 25 00   (" fts5(%\0")
+候选偏移: +16 / -80 / +64
+```
+
+候选需用 256000 轮 PBKDF2 验证，成本高，适合作为最后兜底。
+
+- 来源：`r266-tech/wxkey`、`ai-hermes/chatlog`
+
+### 1.6 GDB 断点捕获 password（Linux x86_64）
+
+Linux 微信不暴露符号，需 ELF 静态分析：在 `.rodata` 中找
+`com.Tencent.WCDB.Config.Cipher`，顺交叉引用找到处理密钥的函数入口，
+再用 GDB 断点，在重新登录时从寄存器读取 32 字节 password。
+
+- 来源：`TANGandXUE/wcdb-key-tool`
+- 说明：本工具当前在 ARM64 上以内存扫描为主，未移植 x86_64 GDB 方案。
+
+## 2. 数据库解密
+
+### 2.1 SQLCipher 4 页面格式
+
+```text
+page 1:  [0:16]=salt | [16:4016]=密文 | [4016:4032]=IV | [4032:4096]=HMAC
+page N:  [0:4016]=密文 | [4016:4032]=IV | [4032:4096]=HMAC
+```
+
+AES-256-CBC，无 padding（SQLCipher 自管）。
+
+- 来源：`wechat-decrypt`、`stargazer-2026/wechat-4.1.12-decrypt`
+- 已整合：`decrypt_page()`。
+
+### 2.2 WAL 帧合并
+
+WAL 帧格式：
+
+```text
+frame = pgno(4, 大端) + dbsize(4, 大端) + salt(8, 大端) + page(4096)
+```
+
+只合并帧 salt 与 WAL header salt 一致的当前周期帧；旧周期帧已 checkpoint 进主库。
+解密 WAL 页用主库 enc_key。
+
+- 来源：`wechat-decrypt/monitor_web.py`、`stargazer-2026/wechat-4.1.12-decrypt`
+- 已整合：`decrypt_wal_full()`。
+
+## 3. 图片 `.dat` 解密
+
+### 3.1 三种格式
+
+| 格式 | Magic | 算法 | 密钥 |
+|---|---|---|---|
+| 旧 XOR | 无 | 单字节 XOR | 自动检测 |
+| V1 | `07 08 V1 08 07` | AES-128-ECB + XOR | 固定 `cfcd208495d565ef` |
+| V2 | `07 08 V2 08 07` | AES-128-ECB + XOR | 从进程内存提取 |
+
+- 来源：`wechat-decrypt/decode_image.py`
+- 已整合：`decode_one_dat()`。
+
+### 3.2 V2 图片密钥本地派生（macOS / 部分平台）
+
+```text
+xor_key = uin & 0xFF
+aes_key = MD5(str(uin) + normalized_wxid).hexdigest()[:16]
+```
+
+uin 来源：
+
+1. kvcomm 缓存文件名 `key_<uin>_*.statistic`
+2. wxid 目录后 4 位 == `md5(str(uin))[:4]`，枚举反推
+
+- 来源：`lyrcsjy/wechat-decrypt`、`hicccc77/WeFlow`、`H3CoF6/py_wx_key`
+- 说明：Linux 当前未发现 kvcomm 缓存，故 Linux 仍走内存扫描。
+
+## 4. 消息导出的已知坑
+
+- 消息表名 = `Msg_<MD5(wxid)>`，需用 `Name2Id` 表映射。
+- `real_sender_id` 在不同消息库（message_0/1/2/3）中含义可能不同甚至相反，逐库需锚点句验证。
+- `local_type`: 1=文本, 47=表情, 3/34/43=图片/语音/视频, 10000=系统消息。
+- 手机备份 `Backup.db` 用手机端独立密钥，PC 端无法解密。
+
+- 来源：`stargazer-2026/wechat-4.1.12-decrypt`
+
+## 5. 已整合清单（v1.2.0）
+
+- [x] 内存扫描 `x'<key><salt>'` + 纯 64-hex
+- [x] SQLCipher 4 HMAC 校验 + 页面解密 + WAL 合并
+- [x] salt 邻域兜底扫描
+- [x] 图片 V1 / V2 / 旧 XOR 解码 + 内存 AES key 扫描
+- [x] 图形界面与自定义存储位置
+- [x] PyInstaller 单文件二进制分发（不附带 Python 源码）
