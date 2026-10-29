@@ -13,12 +13,12 @@
 ![Platform](https://img.shields.io/badge/Linux-ARM64-9cf?style=flat)
 ![License](https://img.shields.io/badge/License-MIT-blue?style=flat)
 
-## 安装包（v1.3.8，单文件二进制）
+## 安装包（v1.4.0，单文件二进制）
 
 位于 [`release/`](release/) 目录：
 
-- `wxchat-tool_1.3.8_arm64.deb` — Debian / Ubuntu（ARM64）安装包（推荐）
-- `wxchat-tool-1.3.8-linux-arm64.tar.gz` — 免安装压缩包
+- `wxchat-tool_1.4.0_arm64.deb` — Debian / Ubuntu（ARM64）安装包（推荐）
+- `wxchat-tool-1.4.0-linux-arm64.tar.gz` — 免安装压缩包
 - `SHA256SUMS` — 校验和
 
 > 本版本使用 PyInstaller 打包为单文件 ELF 二进制，不附带 `.py` 源码，
@@ -28,14 +28,14 @@
 
 ```bash
 # Debian / Ubuntu（ARM64）
-sudo dpkg -i release/wxchat-tool_1.3.8_arm64.deb
+sudo dpkg -i release/wxchat-tool_1.4.0_arm64.deb
 ```
 
 或免安装包：
 
 ```bash
-tar -xzf release/wxchat-tool-1.3.8-linux-arm64.tar.gz
-cd wxchat-tool-1.3.8-linux-arm64 && bash install.sh
+tar -xzf release/wxchat-tool-1.4.0-linux-arm64.tar.gz
+cd wxchat-tool-1.4.0-linux-arm64 && bash install.sh
 ```
 
 校验完整性：
@@ -63,6 +63,8 @@ sha256sum -c SHA256SUMS
 - 图形界面「输出产物」页可一键直达解密结果
 - 图形界面带过渡动画与呼吸灯效果
 - 首次启动显示免责声明同意书（10 秒确认）
+- 可选接入 DeepSeek / OpenAI / Kimi / Claude / 自定义模型，生成智能总结
+- 安装包提供 SHA256 校验和与 GPG 签名
 
 ## 系统要求
 
