@@ -35,6 +35,10 @@
 | `wxq` (PyPI) | Win/macOS/Linux | 本地查询 CLI + MCP，SQLCipher4 + WAL + `wxq export` |
 | `liuxiaogang/wx-group-report` | 本地 | 群聊日报/周报，AI 生成 roast/wrapped/tabloid/esports 四种风格 |
 | WeChat MCP servers (glama) | macOS | 只读 MCP 查询会话/聊天/联系人/群成员 |
+| `wechatauto-replica` | Python | 媒体下载与图片 V2 密钥自动监控、MediaDownloader |
+| `stomakun/WechatExport-iOS` | iOS | 导出为 HTML/TXT，含图片与语音 |
+| `ops120/wechat-local-viewer` | 本地 | 会话浏览、全文搜索、多格式导出、可选 LLM 总结 |
+| `huohuoer/wechat-cli` | 跨平台 | 聊天统计、Markdown/txt 导出、收藏/未读管理 |
 
 ## 1. 数据库密钥提取
 
@@ -254,6 +258,15 @@ WeFlow 提供“年度报告 / 双人报告 / 私聊分析 / 群聊分析”。�
 - `liuxiaogang/wx-group-report`：AI 群聊日报，支持 roast（脱口秀）、wrapped（年报）、
   tabloid（八卦周刊）、esports（战报）四种文风。
 - WeChat MCP servers：只读 MCP，可把本地解密能力接到 Claude/Codex 等 Agent。
+
+### 8.5 媒体与本地查看器（v1.3.6 收录）
+
+- `wechatauto-replica`：图片 V2 密钥仅在查看图片时驻留内存，可做“密钥自动监控捕获”，
+  命中后持久化到 `image_keys.json`；其 `MediaDownloader` 负责图片/语音/文件定位。
+- `stomakun/WechatExport-iOS`：iOS 侧导出 HTML/TXT，含图片与语音，可作为移动端导出思路。
+- `ops120/wechat-local-viewer`：本地会话浏览 + 全文搜索 + 多格式导出 + 可选 LLM 智能总结，
+  与本工具“整理版”方向一致。
+- `huohuoer/wechat-cli`：聊天统计、Markdown/txt 导出、收藏与未读管理。
 
 ### 8.3 密钥提取补充
 
