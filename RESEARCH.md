@@ -31,6 +31,10 @@
 | `kdnsna/WeChatDataAnalysis-` | Windows | 高仿微信界面 + 年度总结 + 朋友圈导出 |
 | `chainlesschain/chainlesschain` | Android/PDH | frida 抓 `libWCDB.so` 的 `sqlite3_key` 思路与 Runbook |
 | `ylytdeng/wechat-decrypt` | Win/Linux/macOS | wechat-decrypt 上游，内存扫描基础实现 |
+| `Bryan-Cyf/WeChatDaily` | Win/Linux/macOS | 工具集：个人微信 SQLCipher4 + 企业微信 wxSQLite3 AES-128 |
+| `wxq` (PyPI) | Win/macOS/Linux | 本地查询 CLI + MCP，SQLCipher4 + WAL + `wxq export` |
+| `liuxiaogang/wx-group-report` | 本地 | 群聊日报/周报，AI 生成 roast/wrapped/tabloid/esports 四种风格 |
+| WeChat MCP servers (glama) | macOS | 只读 MCP 查询会话/聊天/联系人/群成员 |
 
 ## 1. 数据库密钥提取
 
@@ -241,6 +245,15 @@ WeFlow 提供“年度报告 / 双人报告 / 私聊分析 / 群聊分析”。�
 
 借鉴意义：本工具当前只做确定性统计；后续可在“整理版”导出后接入本地大模型做摘要，
 仍保持本地处理。
+
+### 8.4 企业微信与 MCP 扩展
+
+- `Bryan-Cyf/WeChatDaily`：除个人微信 SQLCipher4 外，还提供企业微信
+  `wxSQLite3 AES-128` 解密实现，适合扩展企微导出。
+- `wxq`：命令行本地查询并暴露 MCP，支持 `wxq export "Alice"` 直接导出单聊。
+- `liuxiaogang/wx-group-report`：AI 群聊日报，支持 roast（脱口秀）、wrapped（年报）、
+  tabloid（八卦周刊）、esports（战报）四种文风。
+- WeChat MCP servers：只读 MCP，可把本地解密能力接到 Claude/Codex 等 Agent。
 
 ### 8.3 密钥提取补充
 
