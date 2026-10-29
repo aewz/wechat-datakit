@@ -24,6 +24,13 @@
 | `lyrcsjy/wechat-decrypt` / `hicccc77/WeFlow` | macOS | V2 图片 key = `MD5(uin+wxid)[:16]` 派生 |
 | `zhizunbao84/WeChatDataAnalysis` | Windows | 年度总结、朋友圈导出 |
 | `JamesHopbourn/WeChatDataAnalysis` | Windows | 老版本可视化分析思路 |
+| `Jintian-JTST/WeChat-Annual-Report-Generation` | 跨平台 | Spotify Wrapped 式年度报告，全年热力图 / 作息分布 |
+| `caigee-cmd/wechat-insight` | macOS | 单文件 HTML 滑动年报，关系/商机/情绪/表达习惯 |
+| `yuanfangdeshang/2025-WeChat-Annual-Chat-Report-Generator` | Python | 好友默契度、社交人格测试、年度称号 |
+| `raclen/wechat-suite` | 本地 | 从数据库导出后用大模型按天生成 Markdown 群聊日报 |
+| `kdnsna/WeChatDataAnalysis-` | Windows | 高仿微信界面 + 年度总结 + 朋友圈导出 |
+| `chainlesschain/chainlesschain` | Android/PDH | frida 抓 `libWCDB.so` 的 `sqlite3_key` 思路与 Runbook |
+| `ylytdeng/wechat-decrypt` | Win/Linux/macOS | wechat-decrypt 上游，内存扫描基础实现 |
 
 ## 1. 数据库密钥提取
 
@@ -206,3 +213,37 @@ WeFlow 提供“年度报告 / 双人报告 / 私聊分析 / 群聊分析”。�
 - 候选密钥只做本地 HMAC 校验，不写入、不上传
 
 这比 GDB/Frida 注入方案更“安静”，不容易被微信的反调试/完整性检测发现。
+
+## 8. 可视化与年度报告类仓库（v1.3.2 收录）
+
+### 8.1 Spotify Wrapped 式年度报告
+
+- `Jintian-JTST/WeChat-Annual-Report-Generation`：把整年聊天记录生成可滚动、可分享的
+  年度报告，包含全年活跃热力图（GitHub 贡献图风格）与 24 小时作息分布。
+- `caigee-cmd/wechat-insight`：基于已导出的 JSONL 生成“滑动年报”，覆盖关系、商机、
+  情绪、表达习惯四个维度，输出单文件 HTML。
+- `yuanfangdeshang/2025-WeChat-Annual-Chat-Report-Generator`：好友默契度、社交人格测试、
+  年度称号等游戏化维度。
+
+可借鉴点：
+
+```text
+1. 活跃热力图：按 年 × 周 × 日 聚合消息数，渲染 GitHub-style 格子
+2. 作息分布：按小时聚合 + 按消息类型分层
+3. 关系维度：TOP 聊天、双向消息比例、回复间隔
+4. 表达习惯：词频、消息长度、表情使用偏好
+5. 人格/称号：基于统计规则生成趣味标签
+```
+
+### 8.2 大模型整理与日报
+
+- `raclen/wechat-suite`：先导出聊天记录，再用大模型按天生成 Markdown 群聊日报，可渲染成 PNG。
+
+借鉴意义：本工具当前只做确定性统计；后续可在“整理版”导出后接入本地大模型做摘要，
+仍保持本地处理。
+
+### 8.3 密钥提取补充
+
+- `chainlesschain/chainlesschain`：Android 侧用 frida attach `libWCDB.so` 的
+  `sqlite3_key` 导出函数抓 key 的思路，与本工具的只读内存扫描互补（仅作学习参考）。
+- `ylytdeng/wechat-decrypt`：`josephdavis/wechat-decrypt` 的上游，内存扫描基础实现出处。
