@@ -13,12 +13,12 @@
 ![Platform](https://img.shields.io/badge/Linux-ARM64-9cf?style=flat)
 ![License](https://img.shields.io/badge/License-MIT-blue?style=flat)
 
-## 安装包（v1.5.6，单文件二进制）
+## 安装包（v1.6.0，单文件二进制）
 
 位于 [`release/`](release/) 目录：
 
-- `wxchat-tool_1.5.6_arm64.deb` — Debian / Ubuntu（ARM64）安装包（推荐）
-- `wxchat-tool-1.5.6-linux-arm64.tar.gz` — 免安装压缩包
+- `wxchat-tool_1.6.0_arm64.deb` — Debian / Ubuntu（ARM64）安装包（推荐）
+- `wxchat-tool-1.6.0-linux-arm64.tar.gz` — 免安装压缩包
 - `SHA256SUMS` — 校验和
 
 > 本版本使用 PyInstaller 打包为单文件 ELF 二进制，不附带 `.py` 源码，
@@ -28,14 +28,14 @@
 
 ```bash
 # Debian / Ubuntu（ARM64）
-sudo dpkg -i release/wxchat-tool_1.5.6_arm64.deb
+sudo dpkg -i release/wxchat-tool_1.6.0_arm64.deb
 ```
 
 或免安装包：
 
 ```bash
-tar -xzf release/wxchat-tool-1.5.6-linux-arm64.tar.gz
-cd wxchat-tool-1.5.6-linux-arm64 && bash install.sh
+tar -xzf release/wxchat-tool-1.6.0-linux-arm64.tar.gz
+cd wxchat-tool-1.6.0-linux-arm64 && bash install.sh
 ```
 
 校验完整性：
@@ -66,6 +66,9 @@ sha256sum -c SHA256SUMS
 - 图形界面带过渡动画与呼吸灯效果
 - 首次启动显示免责声明同意书（10 秒确认）
 - 可选接入 DeepSeek / OpenAI / Kimi / Claude / 自定义模型，生成智能总结
+- 自研分析：语言指纹画像、关系动力学时间轴、情绪温度计与冲突预警
+- 自研 AI：多视角辩论式分析、记忆胶囊（时光回溯）、叙事化报告
+- 导出隐私脱敏（手机号/wxid/邮箱打码）
 - 安装包提供 SHA256 校验和与 GPG 签名
 
 ## 系统要求
@@ -101,6 +104,12 @@ wxchat-gui
 | `year` | 生成年度报告 |
 | `search --query 词` | 关键词搜索聊天记录 |
 | `images` | 解密 `.dat` 图片 |
+| `fingerprint` | 语言指纹画像（口头禅/emoji/回复时延） |
+| `relationship` | 关系动力学时间轴（阶段划分） |
+| `emotion` | 情绪温度计 + 冲突预警 |
+| `multiview` | AI 多视角辩论式分析 |
+| `memory` | 记忆胶囊（回顾某一天） |
+| `story` | 叙事化报告 |
 
 ### 输出结构
 
