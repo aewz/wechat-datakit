@@ -13,12 +13,12 @@
 ![Platform](https://img.shields.io/badge/Linux-ARM64-9cf?style=flat)
 ![License](https://img.shields.io/badge/License-MIT-blue?style=flat)
 
-## 安装包（v1.5.1，单文件二进制）
+## 安装包（v1.5.2，单文件二进制）
 
 位于 [`release/`](release/) 目录：
 
-- `wxchat-tool_1.5.1_arm64.deb` — Debian / Ubuntu（ARM64）安装包（推荐）
-- `wxchat-tool-1.5.1-linux-arm64.tar.gz` — 免安装压缩包
+- `wxchat-tool_1.5.2_arm64.deb` — Debian / Ubuntu（ARM64）安装包（推荐）
+- `wxchat-tool-1.5.2-linux-arm64.tar.gz` — 免安装压缩包
 - `SHA256SUMS` — 校验和
 
 > 本版本使用 PyInstaller 打包为单文件 ELF 二进制，不附带 `.py` 源码，
@@ -28,14 +28,14 @@
 
 ```bash
 # Debian / Ubuntu（ARM64）
-sudo dpkg -i release/wxchat-tool_1.5.1_arm64.deb
+sudo dpkg -i release/wxchat-tool_1.5.2_arm64.deb
 ```
 
 或免安装包：
 
 ```bash
-tar -xzf release/wxchat-tool-1.5.1-linux-arm64.tar.gz
-cd wxchat-tool-1.5.1-linux-arm64 && bash install.sh
+tar -xzf release/wxchat-tool-1.5.2-linux-arm64.tar.gz
+cd wxchat-tool-1.5.2-linux-arm64 && bash install.sh
 ```
 
 校验完整性：
@@ -58,6 +58,7 @@ sha256sum -c SHA256SUMS
 - 一键生成年度报告（月度趋势 / 高频关键词 / 活跃时段）
 - 关键词搜索聊天记录
 - 按个人/群聊单选或多选导出（全解 / 整理版两种模式）
+- 按会话导出 ChatLab 标准 JSONL（可直接导入 [ChatLab](https://github.com/ChatLab/ChatLab) 分析）
 - 图片 `.dat` 解密（V1 / V2 / 旧 XOR）
 - 图形界面可自定义数据库目录、附件目录、输出目录
 - 图形界面「输出产物」页可一键直达解密结果
@@ -93,6 +94,8 @@ wxchat-gui
 | `scan` | 仅提取数据库密钥 |
 | `decrypt` | 仅解密（需已有 `all_keys.json`） |
 | `export` | 导出联系人 / 会话 / 消息 |
+| `export --chatlab` | 全部会话导出为 ChatLab JSONL |
+| `chats --chatlab --usernames a,b` | 指定会话导出为 ChatLab JSONL |
 | `report` | 生成统计报告 |
 | `year` | 生成年度报告 |
 | `search --query 词` | 关键词搜索聊天记录 |
@@ -112,12 +115,12 @@ wxchat-gui
     ├── index.html
     ├── report.html
     ├── year_report.html
-    └── search_results.jsonl
+    ├── search_results.jsonl
+    └── chatlab/             # ChatLab 标准格式（每会话一个 .jsonl）
 ```
 
 ## 相关说明
 
-- 算法与技术调研：见 [RESEARCH.md](RESEARCH.md)
 - 免责声明：见 [DISCLAIMER.md](DISCLAIMER.md)
 - 微信安全规则：见 [WECHAT_SAFETY.md](WECHAT_SAFETY.md)
 - 许可证：见 [LICENSE](LICENSE)
