@@ -13,12 +13,12 @@
 ![Platform](https://img.shields.io/badge/Linux-ARM64-9cf?style=flat)
 ![License](https://img.shields.io/badge/License-MIT-blue?style=flat)
 
-## 安装包（v1.5.2，单文件二进制）
+## 安装包（v1.5.3，单文件二进制）
 
 位于 [`release/`](release/) 目录：
 
-- `wxchat-tool_1.5.2_arm64.deb` — Debian / Ubuntu（ARM64）安装包（推荐）
-- `wxchat-tool-1.5.2-linux-arm64.tar.gz` — 免安装压缩包
+- `wxchat-tool_1.5.3_arm64.deb` — Debian / Ubuntu（ARM64）安装包（推荐）
+- `wxchat-tool-1.5.3-linux-arm64.tar.gz` — 免安装压缩包
 - `SHA256SUMS` — 校验和
 
 > 本版本使用 PyInstaller 打包为单文件 ELF 二进制，不附带 `.py` 源码，
@@ -28,14 +28,14 @@
 
 ```bash
 # Debian / Ubuntu（ARM64）
-sudo dpkg -i release/wxchat-tool_1.5.2_arm64.deb
+sudo dpkg -i release/wxchat-tool_1.5.3_arm64.deb
 ```
 
 或免安装包：
 
 ```bash
-tar -xzf release/wxchat-tool-1.5.2-linux-arm64.tar.gz
-cd wxchat-tool-1.5.2-linux-arm64 && bash install.sh
+tar -xzf release/wxchat-tool-1.5.3-linux-arm64.tar.gz
+cd wxchat-tool-1.5.3-linux-arm64 && bash install.sh
 ```
 
 校验完整性：
@@ -54,6 +54,7 @@ sha256sum -c SHA256SUMS
 - 从运行中的微信进程内存提取数据库密钥（含 salt 邻域兜底）
 - 全量解密微信本地数据库（主库 + WAL 合并）
 - 导出联系人、会话、聊天记录
+- 聊天正文自动解压还原（微信 4.x 正文为 zstd 压缩），`messages.jsonl` 附带可读正文与发送者
 - 一键生成统计报告（消息类型 / 聊天 TOP / 24 小时分布）
 - 一键生成年度报告（月度趋势 / 高频关键词 / 活跃时段）
 - 关键词搜索聊天记录
